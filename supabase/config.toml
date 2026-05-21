@@ -1,0 +1,7 @@
+project_id = "dgdlssqakprymhopefik"
+
+[functions.car-route]
+verify_jwt = false
+
+[functions.sl-departures]
+verify_jwt = false
