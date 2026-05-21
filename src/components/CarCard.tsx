@@ -19,10 +19,10 @@ function fmtDistance(m: number) {
   return `${(m / 1000).toFixed(1)} km`;
 }
 
-const trafficLabel: Record<RouteResp["traffic"], { text: string; tone: string }> = {
-  light: { text: "Lätt trafik", tone: "text-accent" },
-  normal: { text: "Normal trafik", tone: "text-muted-foreground" },
-  heavy: { text: "Tät trafik", tone: "text-[hsl(var(--warning))]" },
+const trafficTone: Record<RouteResp["traffic"], string> = {
+  light: "text-accent",
+  normal: "text-muted-foreground",
+  heavy: "text-[hsl(var(--warning))]",
 };
 
 export function CarCard() {
@@ -45,43 +45,78 @@ export function CarCard() {
 
   const minutes = data ? Math.round(data.durationSec / 60) : null;
   const baseMin = data ? Math.round(data.baseDurationSec / 60) : null;
+  const delayMin = data && baseMin !== null && minutes !== null ? minutes - baseMin : 0;
+
+  let delayText: { text: string; tone: string } | null = null;
+  if (data?.trafficAware && baseMin !== null && minutes !== null) {
+    if (delayMin >= 2) {
+      delayText = { text: `+${delayMin} min trafik`, tone: trafficTone[data.traffic] };
+    } else if (delayMin <= -2) {
+      delayText = { text: `${delayMin} min mot normalt`, tone: "text-accent" };
+    } else {
+      delayText = { text: "Normalt trafikläge", tone: "text-muted-foreground" };
+    }
+  }
 
   return (
     <DashboardCard
       title="Bil till jobbet"
       subtitle="Hasselstigen 6 → Lindhagensgatan 100"
-      icon={<Car className="h-7 w-7 lg:h-8 lg:w-8" strokeWidth={1.75} />}
+      icon={<Car className="h-6 w-6" strokeWidth={1.75} />}
       badge={badge}
       updatedAt={updatedAt}
     >
       {loading && !data && <CardLoading />}
       {error && <CardError message={error} />}
       {data && minutes !== null && (
-        <div className="flex flex-col h-full justify-between gap-4">
-          <div>
-            <div className="text-sm lg:text-base uppercase tracking-widest text-muted-foreground">
+        <div className="flex flex-col h-full justify-between gap-3">
+          <div className="flex flex-col gap-2">
+            <span
+              className="uppercase tracking-widest text-muted-foreground"
+              style={{ fontSize: "clamp(11px, 1vw, 14px)" }}
+            >
               Restid nu
-            </div>
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <span className="text-7xl lg:text-9xl font-semibold tabular-nums text-foreground leading-none">
+            </span>
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span
+                className="font-semibold tabular-nums text-foreground leading-none"
+                style={{ fontSize: "clamp(56px, 7.5vw, 104px)" }}
+              >
                 {minutes}
               </span>
-              <span className="text-2xl lg:text-3xl text-muted-foreground">min</span>
+              <span
+                className="text-muted-foreground"
+                style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}
+              >
+                min
+              </span>
             </div>
-            <div className="text-lg lg:text-xl text-foreground/80 mt-1">
+            <div
+              className="text-foreground/80"
+              style={{ fontSize: "clamp(13px, 1.25vw, 17px)" }}
+            >
               {fmtDistance(data.distanceMeters)}
-              {data.trafficAware && baseMin !== null && (
+              {baseMin !== null && data.trafficAware && (
                 <span className="text-muted-foreground"> · normalt {baseMin} min</span>
               )}
             </div>
           </div>
 
-          <div className="border-t border-border/60 pt-3 flex items-center justify-between gap-3">
-            <span className={`text-lg lg:text-xl font-medium ${data.trafficAware ? trafficLabel[data.traffic].tone : "text-muted-foreground"}`}>
-              {data.trafficAware ? trafficLabel[data.traffic].text : "Restid utan live-trafik"}
-            </span>
-            {data.warning && (
-              <span className="text-xs text-muted-foreground italic truncate max-w-[40%]">{data.warning}</span>
+          <div className="border-t border-border/60 pt-2 flex items-baseline justify-between gap-3">
+            {data.trafficAware && delayText ? (
+              <span
+                className={`font-medium ${delayText.tone}`}
+                style={{ fontSize: "clamp(13px, 1.2vw, 16px)" }}
+              >
+                {delayText.text}
+              </span>
+            ) : (
+              <span
+                className="text-muted-foreground"
+                style={{ fontSize: "clamp(13px, 1.2vw, 16px)" }}
+              >
+                Restid utan live-trafik
+              </span>
             )}
           </div>
         </div>
