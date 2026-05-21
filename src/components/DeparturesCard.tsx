@@ -49,7 +49,15 @@ function formatTime(iso?: string): string {
   return d.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
 }
 
-export function DeparturesCard({ title, subtitle, variant, siteId, transport, line, destinationFilter }: Props) {
+export function DeparturesCard({
+  title,
+  subtitle,
+  variant,
+  siteId,
+  transport,
+  line,
+  destinationFilter,
+}: Props) {
   const { data, error, loading, updatedAt } = usePoll<DeparturesResponse>({
     intervalMs: 30_000,
     fetcher: async () => {
@@ -102,7 +110,7 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
     <DashboardCard
       title={title}
       subtitle={subtitle}
-      icon={<Icon className="h-6 w-6" strokeWidth={1.75} />}
+      icon={<Icon className="h-5 w-5" strokeWidth={1.75} />}
       badge={
         error ? (
           <SourceBadge label="Ej tillgänglig" tone="fallback" />
@@ -117,19 +125,20 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
       {!loading && !error && departures.length === 0 && (
         <CardEmpty message="Inga kommande avgångar hittades." />
       )}
+
       {next && (
-        <div className="flex flex-col h-full justify-between gap-3">
-          <div className="flex flex-col gap-2">
+        <div className="flex flex-col h-full justify-between gap-2 min-h-0">
+          <div className="flex flex-col gap-2 min-h-0">
             <div className="flex items-center gap-3">
               <span
                 className={`inline-flex items-center justify-center ${lineBg} text-primary-foreground rounded-xl px-3 py-1 font-bold tabular-nums leading-none`}
-                style={{ fontSize: "clamp(22px, 2.4vw, 32px)" }}
+                style={{ fontSize: "clamp(22px, 3.2vh, 32px)" }}
               >
                 {line}
               </span>
               <span
                 className="uppercase tracking-widest text-muted-foreground"
-                style={{ fontSize: "clamp(11px, 1vw, 14px)" }}
+                style={{ fontSize: "clamp(11px, 1.7vh, 14px)" }}
               >
                 Nästa
               </span>
@@ -138,14 +147,14 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
             <div className="flex items-baseline gap-2 flex-wrap">
               <span
                 className="font-semibold tabular-nums text-foreground leading-none"
-                style={{ fontSize: "clamp(56px, 7.5vw, 104px)" }}
+                style={{ fontSize: "clamp(64px, 10.5vh, 104px)" }}
               >
                 {nextMins === null ? next.display : nextMins <= 0 ? "Nu" : nextMins}
               </span>
               {nextMins !== null && nextMins > 0 && (
                 <span
                   className="text-muted-foreground"
-                  style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}
+                  style={{ fontSize: "clamp(20px, 3vh, 30px)" }}
                 >
                   min
                 </span>
@@ -154,10 +163,13 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
 
             <div
               className="text-foreground/80 truncate"
-              style={{ fontSize: "clamp(13px, 1.25vw, 17px)" }}
+              style={{ fontSize: "clamp(14px, 2vh, 19px)" }}
             >
               {next.destination}
-              <span className="text-muted-foreground"> · {formatTime(next.expected ?? next.scheduled)}</span>
+              <span className="text-muted-foreground">
+                {" "}
+                · {formatTime(next.expected ?? next.scheduled)}
+              </span>
               {nextDelayed && (
                 <span className="ml-2 text-[hsl(var(--warning))]">försenad</span>
               )}
@@ -165,22 +177,22 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
           </div>
 
           {second && (
-            <div className="border-t border-border/60 pt-2 flex items-baseline justify-between gap-3">
+            <div className="border-t border-border/60 pt-2 flex items-baseline justify-between gap-3 shrink-0">
               <div
-                className="text-muted-foreground truncate"
-                style={{ fontSize: "clamp(12px, 1.1vw, 15px)" }}
+                className="text-muted-foreground whitespace-nowrap"
+                style={{ fontSize: "clamp(12px, 1.8vh, 16px)" }}
               >
-                Sedan {formatTime(second.expected ?? second.scheduled)}
+                Därefter {formatTime(second.expected ?? second.scheduled)}
               </div>
               <div
-                className="font-semibold tabular-nums text-foreground"
-                style={{ fontSize: "clamp(18px, 1.8vw, 24px)" }}
+                className="font-semibold tabular-nums text-foreground whitespace-nowrap"
+                style={{ fontSize: "clamp(18px, 2.7vh, 26px)" }}
               >
                 {secondMins === null
                   ? second.display
                   : secondMins <= 0
-                  ? "Nu"
-                  : `${secondMins} min`}
+                    ? "Nu"
+                    : `${secondMins} min`}
               </div>
             </div>
           )}

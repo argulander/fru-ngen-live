@@ -37,11 +37,13 @@ export function CarCard() {
   });
 
   const isFallback = data?.source === "osrm";
-  const badge = error
-    ? <SourceBadge label="Ej tillgänglig" tone="fallback" />
-    : isFallback
-      ? <SourceBadge label="Utan live-trafik" tone="fallback" />
-      : <SourceBadge label="Live-trafik" tone="live" />;
+  const badge = error ? (
+    <SourceBadge label="Ej tillgänglig" tone="fallback" />
+  ) : isFallback ? (
+    <SourceBadge label="Utan live-trafik" tone="fallback" />
+  ) : (
+    <SourceBadge label="Live-trafik" tone="live" />
+  );
 
   const minutes = data ? Math.round(data.durationSec / 60) : null;
   const baseMin = data ? Math.round(data.baseDurationSec / 60) : null;
@@ -60,40 +62,43 @@ export function CarCard() {
 
   return (
     <DashboardCard
-      title="Bil till jobbet"
-      subtitle="Hasselstigen 6 → Lindhagensgatan 100"
-      icon={<Car className="h-6 w-6" strokeWidth={1.75} />}
+      title="Bil"
+      subtitle="Hasselstigen → Lindhagen"
+      icon={<Car className="h-5 w-5" strokeWidth={1.75} />}
       badge={badge}
       updatedAt={updatedAt}
     >
       {loading && !data && <CardLoading />}
       {error && <CardError message={error} />}
+
       {data && minutes !== null && (
-        <div className="flex flex-col h-full justify-between gap-3">
+        <div className="flex flex-col h-full justify-between gap-2 min-h-0">
           <div className="flex flex-col gap-2">
             <span
               className="uppercase tracking-widest text-muted-foreground"
-              style={{ fontSize: "clamp(11px, 1vw, 14px)" }}
+              style={{ fontSize: "clamp(11px, 1.7vh, 14px)" }}
             >
               Restid nu
             </span>
+
             <div className="flex items-baseline gap-2 flex-wrap">
               <span
                 className="font-semibold tabular-nums text-foreground leading-none"
-                style={{ fontSize: "clamp(56px, 7.5vw, 104px)" }}
+                style={{ fontSize: "clamp(64px, 10.5vh, 104px)" }}
               >
                 {minutes}
               </span>
               <span
                 className="text-muted-foreground"
-                style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}
+                style={{ fontSize: "clamp(20px, 3vh, 30px)" }}
               >
                 min
               </span>
             </div>
+
             <div
               className="text-foreground/80"
-              style={{ fontSize: "clamp(13px, 1.25vw, 17px)" }}
+              style={{ fontSize: "clamp(14px, 2vh, 19px)" }}
             >
               {fmtDistance(data.distanceMeters)}
               {baseMin !== null && data.trafficAware && (
@@ -102,18 +107,18 @@ export function CarCard() {
             </div>
           </div>
 
-          <div className="border-t border-border/60 pt-2 flex items-baseline justify-between gap-3">
+          <div className="border-t border-border/60 pt-2 flex items-baseline justify-between gap-3 shrink-0">
             {data.trafficAware && delayText ? (
               <span
                 className={`font-medium ${delayText.tone}`}
-                style={{ fontSize: "clamp(13px, 1.2vw, 16px)" }}
+                style={{ fontSize: "clamp(13px, 2vh, 17px)" }}
               >
                 {delayText.text}
               </span>
             ) : (
               <span
                 className="text-muted-foreground"
-                style={{ fontSize: "clamp(13px, 1.2vw, 16px)" }}
+                style={{ fontSize: "clamp(13px, 2vh, 17px)" }}
               >
                 Restid utan live-trafik
               </span>

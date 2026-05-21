@@ -1,4 +1,15 @@
-import { Cloud, CloudRain, CloudSnow, Sun, CloudSun, CloudFog, CloudLightning, Umbrella, Wind, Droplets } from "lucide-react";
+import {
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  Sun,
+  CloudSun,
+  CloudFog,
+  CloudLightning,
+  Umbrella,
+  Wind,
+  Droplets,
+} from "lucide-react";
 import { DashboardCard, SourceBadge, CardLoading, CardError } from "./DashboardCard";
 import { usePoll } from "@/hooks/useDashboard";
 import { ReactNode } from "react";
@@ -36,7 +47,9 @@ const codeToIcon = (c: number, cls = "h-5 w-5"): ReactNode => {
   if ([1, 2].includes(c)) return <CloudSun className={cls} strokeWidth={1.75} />;
   if (c === 3) return <Cloud className={cls} strokeWidth={1.75} />;
   if ([45, 48].includes(c)) return <CloudFog className={cls} strokeWidth={1.75} />;
-  if ([71, 73, 75, 77, 85, 86].includes(c)) return <CloudSnow className={cls} strokeWidth={1.75} />;
+  if ([71, 73, 75, 77, 85, 86].includes(c)) {
+    return <CloudSnow className={cls} strokeWidth={1.75} />;
+  }
   if ([95, 96, 99].includes(c)) return <CloudLightning className={cls} strokeWidth={1.75} />;
   return <CloudRain className={cls} strokeWidth={1.75} />;
 };
@@ -86,87 +99,95 @@ export function WeatherCard() {
 
   return (
     <DashboardCard
-      title="Väder i Fruängen"
-      subtitle="Just nu och kommande timmar"
-      icon={data ? codeToIcon(data.current.weather_code, "h-7 w-7") : <Cloud className="h-7 w-7" strokeWidth={1.75} />}
+      title="Väder"
+      subtitle="Kläder, paraply och kommande timmar"
+      icon={
+        data ? (
+          codeToIcon(data.current.weather_code, "h-6 w-6")
+        ) : (
+          <Cloud className="h-6 w-6" strokeWidth={1.75} />
+        )
+      }
       badge={
-        error ? <SourceBadge label="Ej tillgänglig" tone="fallback" /> : <SourceBadge label="Open-Meteo" tone="live" />
+        error ? (
+          <SourceBadge label="Ej tillgänglig" tone="fallback" />
+        ) : (
+          <SourceBadge label="Open-Meteo" tone="live" />
+        )
       }
       updatedAt={updatedAt}
     >
       {loading && !data && <CardLoading />}
       {error && <CardError message={error} />}
       {data && (
-        <div className="flex flex-col h-full gap-3 lg:gap-4 min-h-0">
-          <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-4 lg:gap-8 items-center">
-            <div className="flex items-center gap-4 lg:gap-6">
-              <span
-                className="font-semibold tabular-nums text-foreground leading-none"
-                style={{ fontSize: "clamp(72px, 11vw, 144px)" }}
-              >
-                {Math.round(data.current.temperature_2m)}°
+        <div className="grid grid-cols-1 lg:grid-cols-[0.9fr_1.15fr_1.25fr] gap-3 lg:gap-6 h-full min-h-0 items-center">
+          <div className="flex items-center gap-3 lg:gap-5 min-w-0">
+            <span
+              className="font-semibold tabular-nums text-foreground leading-none"
+              style={{ fontSize: "clamp(64px, 11vh, 112px)" }}
+            >
+              {Math.round(data.current.temperature_2m)}°
+            </span>
+            <div className="flex flex-col gap-1">
+              <span className="text-primary">
+                {codeToIcon(data.current.weather_code, "h-9 w-9 lg:h-12 lg:w-12")}
               </span>
-              <div className="flex flex-col gap-1">
-                <span className="text-primary">
-                  {codeToIcon(data.current.weather_code, "h-10 w-10 lg:h-14 lg:w-14")}
-                </span>
-                <span
-                  className="text-foreground/80 font-medium leading-tight"
-                  style={{ fontSize: "clamp(16px, 1.6vw, 22px)" }}
-                >
-                  {codeToText(data.current.weather_code)}
-                </span>
-              </div>
+              <span
+                className="text-foreground/80 font-medium leading-tight"
+                style={{ fontSize: "clamp(15px, 2.1vh, 21px)" }}
+              >
+                {codeToText(data.current.weather_code)}
+              </span>
             </div>
+          </div>
 
-            <div className="flex flex-col gap-2 min-w-0">
-              <p
-                className="text-foreground leading-snug"
-                style={{ fontSize: "clamp(16px, 1.7vw, 22px)" }}
-              >
-                {advice?.comment}
-              </p>
-              <p
-                className="text-muted-foreground leading-snug"
-                style={{ fontSize: "clamp(13px, 1.2vw, 16px)" }}
-              >
-                {advice?.clothing}
-              </p>
-              <div className="flex flex-wrap items-center gap-2 mt-1">
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${umbrellaTone}`}>
-                  <Umbrella className="h-4 w-4" strokeWidth={2} />
-                  Paraply: {advice?.umbrella}
-                </span>
-                {typeof data.current.wind_speed_10m === "number" && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm bg-secondary text-muted-foreground">
-                    <Wind className="h-4 w-4" strokeWidth={2} />
-                    {Math.round(data.current.wind_speed_10m)} m/s
-                  </span>
-                )}
+          <div className="flex flex-col gap-2 min-w-0">
+            <p
+              className="text-foreground leading-tight font-medium"
+              style={{ fontSize: "clamp(18px, 2.5vh, 26px)" }}
+            >
+              {advice?.comment}
+            </p>
+            <p
+              className="text-muted-foreground leading-snug"
+              style={{ fontSize: "clamp(13px, 1.8vh, 17px)" }}
+            >
+              {advice?.clothing}
+            </p>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${umbrellaTone}`}>
+                <Umbrella className="h-4 w-4" strokeWidth={2} />
+                Paraply: {advice?.umbrella}
+              </span>
+              {typeof data.current.wind_speed_10m === "number" && (
                 <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm bg-secondary text-muted-foreground">
-                  <Droplets className="h-4 w-4" strokeWidth={2} />
-                  Nederbörd {maxPop}%
+                  <Wind className="h-4 w-4" strokeWidth={2} />
+                  {Math.round(data.current.wind_speed_10m)} m/s
                 </span>
-              </div>
+              )}
+              <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm bg-secondary text-muted-foreground">
+                <Droplets className="h-4 w-4" strokeWidth={2} />
+                {maxPop}%
+              </span>
             </div>
           </div>
 
           {hours && hours.length > 0 && (
-            <div className="-mx-1 overflow-x-auto mt-auto">
-              <div className="flex gap-2 px-1 min-w-full">
+            <div className="overflow-hidden min-w-0">
+              <div className="grid grid-cols-4 xl:grid-cols-8 gap-1.5 lg:gap-2">
                 {hours.map((h) => {
                   const d = new Date(h.time);
                   const label = d.toLocaleTimeString("sv-SE", { hour: "2-digit" });
                   return (
                     <div
                       key={h.time}
-                      className="flex-1 min-w-[68px] rounded-2xl bg-secondary/60 px-2 py-2 flex flex-col items-center gap-0.5"
+                      className="rounded-2xl bg-secondary/60 px-2 py-2 flex flex-col items-center gap-0.5 min-w-0"
                     >
                       <span className="text-xs text-muted-foreground">{label}</span>
                       <span className="text-primary">{codeToIcon(h.code, "h-5 w-5")}</span>
                       <span
                         className="font-medium tabular-nums"
-                        style={{ fontSize: "clamp(14px, 1.4vw, 18px)" }}
+                        style={{ fontSize: "clamp(14px, 2vh, 18px)" }}
                       >
                         {Math.round(h.temp)}°
                       </span>
