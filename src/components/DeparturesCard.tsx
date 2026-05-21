@@ -96,14 +96,13 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
   const secondMins = second ? minutesUntil(second.expected ?? second.scheduled) : null;
   const nextDelayed = next?.expected && next?.scheduled && next.expected !== next.scheduled;
 
-  // Color identity per line
   const lineBg = variant === "metro" ? "bg-[hsl(158_55%_30%)]" : "bg-[hsl(210_70%_45%)]";
 
   return (
     <DashboardCard
       title={title}
       subtitle={subtitle}
-      icon={<Icon className="h-7 w-7 lg:h-8 lg:w-8" strokeWidth={1.75} />}
+      icon={<Icon className="h-6 w-6" strokeWidth={1.75} />}
       badge={
         error ? (
           <SourceBadge label="Ej tillgänglig" tone="fallback" />
@@ -119,49 +118,64 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
         <CardEmpty message="Inga kommande avgångar hittades." />
       )}
       {next && (
-        <div className="flex flex-col h-full justify-between gap-4">
-          <div className="flex items-stretch gap-5">
-            <div
-              className={`shrink-0 ${lineBg} text-primary-foreground rounded-2xl flex items-center justify-center px-5 min-w-[96px] lg:min-w-[120px]`}
-            >
-              <span className="text-5xl lg:text-7xl font-bold tabular-nums leading-none">
+        <div className="flex flex-col h-full justify-between gap-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <span
+                className={`inline-flex items-center justify-center ${lineBg} text-primary-foreground rounded-xl px-3 py-1 font-bold tabular-nums leading-none`}
+                style={{ fontSize: "clamp(22px, 2.4vw, 32px)" }}
+              >
                 {line}
               </span>
-            </div>
-            <div className="flex-1 min-w-0 flex flex-col justify-center">
-              <div className="text-sm lg:text-base uppercase tracking-widest text-muted-foreground">
+              <span
+                className="uppercase tracking-widest text-muted-foreground"
+                style={{ fontSize: "clamp(11px, 1vw, 14px)" }}
+              >
                 Nästa
-              </div>
-              <div className="flex items-baseline gap-3 flex-wrap">
-                <span className="text-6xl lg:text-8xl font-semibold tabular-nums text-foreground leading-none">
-                  {nextMins === null
-                    ? next.display
-                    : nextMins <= 0
-                    ? "Nu"
-                    : nextMins}
+              </span>
+            </div>
+
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span
+                className="font-semibold tabular-nums text-foreground leading-none"
+                style={{ fontSize: "clamp(56px, 7.5vw, 104px)" }}
+              >
+                {nextMins === null ? next.display : nextMins <= 0 ? "Nu" : nextMins}
+              </span>
+              {nextMins !== null && nextMins > 0 && (
+                <span
+                  className="text-muted-foreground"
+                  style={{ fontSize: "clamp(18px, 1.8vw, 26px)" }}
+                >
+                  min
                 </span>
-                {nextMins !== null && nextMins > 0 && (
-                  <span className="text-2xl lg:text-3xl text-muted-foreground">min</span>
-                )}
-              </div>
-              <div className="text-lg lg:text-xl text-foreground/80 mt-1 truncate">
-                {next.destination}
-                <span className="text-muted-foreground"> · {formatTime(next.expected ?? next.scheduled)}</span>
-                {nextDelayed && (
-                  <span className="ml-2 text-[hsl(var(--warning))] text-base">försenad</span>
-                )}
-              </div>
+              )}
+            </div>
+
+            <div
+              className="text-foreground/80 truncate"
+              style={{ fontSize: "clamp(13px, 1.25vw, 17px)" }}
+            >
+              {next.destination}
+              <span className="text-muted-foreground"> · {formatTime(next.expected ?? next.scheduled)}</span>
+              {nextDelayed && (
+                <span className="ml-2 text-[hsl(var(--warning))]">försenad</span>
+              )}
             </div>
           </div>
 
           {second && (
-            <div className="border-t border-border/60 pt-3 flex items-baseline justify-between gap-3">
-              <div className="text-base lg:text-lg text-muted-foreground">
-                Sedan{" "}
-                <span className="text-foreground/80">{second.destination}</span>
-                <span className="text-muted-foreground"> · {formatTime(second.expected ?? second.scheduled)}</span>
+            <div className="border-t border-border/60 pt-2 flex items-baseline justify-between gap-3">
+              <div
+                className="text-muted-foreground truncate"
+                style={{ fontSize: "clamp(12px, 1.1vw, 15px)" }}
+              >
+                Sedan {formatTime(second.expected ?? second.scheduled)}
               </div>
-              <div className="text-2xl lg:text-3xl font-semibold tabular-nums text-foreground">
+              <div
+                className="font-semibold tabular-nums text-foreground"
+                style={{ fontSize: "clamp(18px, 1.8vw, 24px)" }}
+              >
                 {secondMins === null
                   ? second.display
                   : secondMins <= 0
