@@ -43,20 +43,20 @@ const Index = () => {
 
           <main className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <DeparturesCard
-              title="Tunnelbana linje 14"
-              subtitle="Fruängen → T-Centralen"
-              variant="metro"
-              siteId={FRUANGEN_METRO_SITE}
-              transport="METRO"
-              line="14"
-            />
-            <DeparturesCard
               title="Buss 173"
               subtitle="Fruängsgården (mot Fruängen)"
               variant="bus"
               siteId={FRUANGSGARDEN_BUS_SITE}
               transport="BUS"
               line="173"
+            />
+            <DeparturesCard
+              title="Tunnelbana linje 14"
+              subtitle="Fruängen → T-Centralen"
+              variant="metro"
+              siteId={FRUANGEN_METRO_SITE}
+              transport="METRO"
+              line="14"
             />
             <CarCard />
             <WeatherCard />
