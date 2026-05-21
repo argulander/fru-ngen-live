@@ -27,34 +27,35 @@ interface DashboardCardProps {
   badge?: ReactNode;
   updatedAt?: Date | null;
   children: ReactNode;
+  className?: string;
 }
 
 function formatUpdated(d: Date) {
-  return d.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  return d.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
 }
 
-export function DashboardCard({ title, subtitle, icon, badge, updatedAt, children }: DashboardCardProps) {
+export function DashboardCard({ title, subtitle, icon, badge, updatedAt, children, className }: DashboardCardProps) {
   return (
-    <section className="card-surface p-5 sm:p-6 flex flex-col gap-4 min-h-[200px]">
+    <section className={cn("card-surface p-6 lg:p-8 flex flex-col gap-4 lg:gap-5 min-h-0 h-full", className)}>
       <header className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0">
+        <div className="flex items-center gap-4 min-w-0">
           {icon && (
-            <div className="shrink-0 h-10 w-10 rounded-xl bg-secondary flex items-center justify-center text-primary">
+            <div className="shrink-0 h-12 w-12 lg:h-14 lg:w-14 rounded-2xl bg-secondary flex items-center justify-center text-primary">
               {icon}
             </div>
           )}
           <div className="min-w-0">
-            <h2 className="text-base font-semibold text-foreground leading-tight truncate">{title}</h2>
-            {subtitle && <p className="text-xs text-muted-foreground mt-0.5 truncate">{subtitle}</p>}
+            <h2 className="text-2xl lg:text-3xl font-semibold text-foreground leading-tight truncate">{title}</h2>
+            {subtitle && <p className="text-base lg:text-lg text-muted-foreground mt-0.5 truncate">{subtitle}</p>}
           </div>
         </div>
         {badge && <div className="shrink-0">{badge}</div>}
       </header>
 
-      <div className="flex-1">{children}</div>
+      <div className="flex-1 min-h-0 flex flex-col">{children}</div>
 
       {updatedAt && (
-        <footer className="text-[11px] text-muted-foreground">
+        <footer className="text-[11px] lg:text-xs text-muted-foreground/70">
           Uppdaterad {formatUpdated(updatedAt)}
         </footer>
       )}
@@ -64,7 +65,7 @@ export function DashboardCard({ title, subtitle, icon, badge, updatedAt, childre
 
 export function CardLoading({ label = "Hämtar…" }: { label?: string }) {
   return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <div className="flex items-center gap-2 text-base text-muted-foreground">
       <span className="h-2 w-2 rounded-full bg-muted-foreground/40 animate-pulse" />
       {label}
     </div>
@@ -81,5 +82,5 @@ export function CardError({ message }: { message: string }) {
 }
 
 export function CardEmpty({ message }: { message: string }) {
-  return <div className="text-sm text-muted-foreground">{message}</div>;
+  return <div className="text-base text-muted-foreground">{message}</div>;
 }

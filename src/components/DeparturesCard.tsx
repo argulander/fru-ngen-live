@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Departure {
   destination: string;
-  display: string; // e.g. "5 min", "Nu", "12:34"
-  scheduled: string; // ISO
-  expected?: string; // ISO
+  display: string;
+  scheduled: string;
+  expected?: string;
   state?: string;
   line: string;
 }
@@ -32,7 +32,7 @@ interface Props {
   siteId: number;
   transport: "METRO" | "BUS";
   line: string;
-  destinationFilter?: string; // optional filter to match destination string
+  destinationFilter?: string;
 }
 
 function minutesUntil(iso?: string): number | null {
@@ -90,11 +90,20 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
       }));
   }
 
+  const next = departures[0];
+  const second = departures[1];
+  const nextMins = next ? minutesUntil(next.expected ?? next.scheduled) : null;
+  const secondMins = second ? minutesUntil(second.expected ?? second.scheduled) : null;
+  const nextDelayed = next?.expected && next?.scheduled && next.expected !== next.scheduled;
+
+  // Color identity per line
+  const lineBg = variant === "metro" ? "bg-[hsl(158_55%_30%)]" : "bg-[hsl(210_70%_45%)]";
+
   return (
     <DashboardCard
       title={title}
       subtitle={subtitle}
-      icon={<Icon className="h-5 w-5" />}
+      icon={<Icon className="h-7 w-7 lg:h-8 lg:w-8" strokeWidth={1.75} />}
       badge={
         error ? (
           <SourceBadge label="Ej tillgänglig" tone="fallback" />
@@ -109,39 +118,59 @@ export function DeparturesCard({ title, subtitle, variant, siteId, transport, li
       {!loading && !error && departures.length === 0 && (
         <CardEmpty message="Inga kommande avgångar hittades." />
       )}
-      {departures.length > 0 && (
-        <ul className="divide-y divide-border/60">
-          {departures.map((d, i) => {
-            const mins = minutesUntil(d.expected ?? d.scheduled);
-            const minsLabel =
-              mins === null ? d.display : mins <= 0 ? "Nu" : `${mins} min`;
-            const delayed = d.expected && d.scheduled && d.expected !== d.scheduled;
-            return (
-              <li key={i} className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center text-xs font-semibold rounded-md bg-primary text-primary-foreground px-2 py-0.5">
-                      {d.line}
-                    </span>
-                    <span className="text-sm font-medium truncate">{d.destination}</span>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {formatTime(d.expected ?? d.scheduled)}
-                    {delayed && <span className="ml-2 text-[hsl(var(--warning))]">försenad</span>}
-                    {d.state && d.state !== "EXPECTED" && (
-                      <span className="ml-2">· {d.state.toLowerCase()}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className="text-xl font-semibold tabular-nums text-foreground">
-                    {minsLabel}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+      {next && (
+        <div className="flex flex-col h-full justify-between gap-4">
+          <div className="flex items-stretch gap-5">
+            <div
+              className={`shrink-0 ${lineBg} text-primary-foreground rounded-2xl flex items-center justify-center px-5 min-w-[96px] lg:min-w-[120px]`}
+            >
+              <span className="text-5xl lg:text-7xl font-bold tabular-nums leading-none">
+                {line}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              <div className="text-sm lg:text-base uppercase tracking-widest text-muted-foreground">
+                Nästa
+              </div>
+              <div className="flex items-baseline gap-3 flex-wrap">
+                <span className="text-6xl lg:text-8xl font-semibold tabular-nums text-foreground leading-none">
+                  {nextMins === null
+                    ? next.display
+                    : nextMins <= 0
+                    ? "Nu"
+                    : nextMins}
+                </span>
+                {nextMins !== null && nextMins > 0 && (
+                  <span className="text-2xl lg:text-3xl text-muted-foreground">min</span>
+                )}
+              </div>
+              <div className="text-lg lg:text-xl text-foreground/80 mt-1 truncate">
+                {next.destination}
+                <span className="text-muted-foreground"> · {formatTime(next.expected ?? next.scheduled)}</span>
+                {nextDelayed && (
+                  <span className="ml-2 text-[hsl(var(--warning))] text-base">försenad</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {second && (
+            <div className="border-t border-border/60 pt-3 flex items-baseline justify-between gap-3">
+              <div className="text-base lg:text-lg text-muted-foreground">
+                Sedan{" "}
+                <span className="text-foreground/80">{second.destination}</span>
+                <span className="text-muted-foreground"> · {formatTime(second.expected ?? second.scheduled)}</span>
+              </div>
+              <div className="text-2xl lg:text-3xl font-semibold tabular-nums text-foreground">
+                {secondMins === null
+                  ? second.display
+                  : secondMins <= 0
+                  ? "Nu"
+                  : `${secondMins} min`}
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </DashboardCard>
   );
