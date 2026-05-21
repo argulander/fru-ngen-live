@@ -52,12 +52,11 @@ const Index = () => {
             />
             <DeparturesCard
               title="Buss 173"
-              subtitle="Fruängsgården → Fruängen"
+              subtitle="Fruängsgården (mot Fruängen)"
               variant="bus"
               siteId={FRUANGSGARDEN_BUS_SITE}
               transport="BUS"
               line="173"
-              destinationFilter="Fruängen"
             />
             <CarCard />
             <WeatherCard />
