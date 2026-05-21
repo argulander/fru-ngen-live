@@ -15,13 +15,6 @@ interface RouteResp {
   destination: string;
 }
 
-function fmtDuration(sec: number) {
-  const m = Math.round(sec / 60);
-  if (m < 60) return `${m} min`;
-  const h = Math.floor(m / 60);
-  return `${h} tim ${m % 60} min`;
-}
-
 function fmtDistance(m: number) {
   return `${(m / 1000).toFixed(1)} km`;
 }
@@ -47,45 +40,50 @@ export function CarCard() {
   const badge = error
     ? <SourceBadge label="Ej tillgänglig" tone="fallback" />
     : isFallback
-      ? <SourceBadge label="OSRM fallback" tone="fallback" />
-      : <SourceBadge label="Google Routes" tone="live" />;
+      ? <SourceBadge label="Utan live-trafik" tone="fallback" />
+      : <SourceBadge label="Live-trafik" tone="live" />;
+
+  const minutes = data ? Math.round(data.durationSec / 60) : null;
+  const baseMin = data ? Math.round(data.baseDurationSec / 60) : null;
 
   return (
     <DashboardCard
       title="Bil till jobbet"
       subtitle="Hasselstigen 6 → Lindhagensgatan 100"
-      icon={<Car className="h-5 w-5" />}
+      icon={<Car className="h-7 w-7 lg:h-8 lg:w-8" strokeWidth={1.75} />}
       badge={badge}
       updatedAt={updatedAt}
     >
       {loading && !data && <CardLoading />}
       {error && <CardError message={error} />}
-      {data && (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-baseline gap-3">
-            <span className="text-4xl font-semibold tabular-nums text-foreground">
-              {fmtDuration(data.durationSec)}
-            </span>
-            <span className="text-sm text-muted-foreground">{fmtDistance(data.distanceMeters)}</span>
+      {data && minutes !== null && (
+        <div className="flex flex-col h-full justify-between gap-4">
+          <div>
+            <div className="text-sm lg:text-base uppercase tracking-widest text-muted-foreground">
+              Restid nu
+            </div>
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <span className="text-7xl lg:text-9xl font-semibold tabular-nums text-foreground leading-none">
+                {minutes}
+              </span>
+              <span className="text-2xl lg:text-3xl text-muted-foreground">min</span>
+            </div>
+            <div className="text-lg lg:text-xl text-foreground/80 mt-1">
+              {fmtDistance(data.distanceMeters)}
+              {data.trafficAware && baseMin !== null && (
+                <span className="text-muted-foreground"> · normalt {baseMin} min</span>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className={`font-medium ${trafficLabel[data.traffic].tone}`}>
+
+          <div className="border-t border-border/60 pt-3 flex items-center justify-between gap-3">
+            <span className={`text-lg lg:text-xl font-medium ${data.trafficAware ? trafficLabel[data.traffic].tone : "text-muted-foreground"}`}>
               {data.trafficAware ? trafficLabel[data.traffic].text : "Restid utan live-trafik"}
             </span>
-            {data.trafficAware && data.baseDurationSec > 0 && (
-              <span className="text-xs text-muted-foreground">
-                · normalt {fmtDuration(data.baseDurationSec)}
-              </span>
+            {data.warning && (
+              <span className="text-xs text-muted-foreground italic truncate max-w-[40%]">{data.warning}</span>
             )}
           </div>
-          {!data.trafficAware && (
-            <p className="text-xs text-muted-foreground">
-              Trafik-medveten data är inte tillgänglig just nu.
-            </p>
-          )}
-          {data.warning && (
-            <p className="text-xs text-muted-foreground italic">{data.warning}</p>
-          )}
         </div>
       )}
     </DashboardCard>
