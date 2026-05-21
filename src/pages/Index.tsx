@@ -5,8 +5,8 @@ import { CarCard } from "@/components/CarCard";
 import { WeatherCard } from "@/components/WeatherCard";
 
 // Known SL site IDs
-const FRUANGEN_METRO_SITE = 9303; // Fruängen T-bana (linje 14)
-const FRUANGSGARDEN_BUS_SITE = 5236; // Fruängsgården busshållplats (linje 173)
+const FRUANGEN_METRO_SITE = 9260; // Fruängen T-bana (linje 14)
+const FRUANGSGARDEN_BUS_SITE = 1665; // Fruängsgården busshållplats (linje 173)
 
 const Index = () => {
   const now = useNow(1000);
