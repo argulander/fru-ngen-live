@@ -57,6 +57,7 @@ const Index = () => {
               siteId={FRUANGSGARDEN_BUS_SITE}
               transport="BUS"
               line="173"
+              destinationFilter="Fruängen"
             />
             <CarCard />
             <WeatherCard />
